@@ -9,11 +9,32 @@ let server = null;
 let lastScreens = [];
 
 export function init() {
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+
   const initData = tg.initDataUnsafe;
   userId = initData?.user?.id;
-  if (!userId) return document.getElementById('main').innerText = 'Ошибка авторизации';
+
+  if (!userId) {
+    document.getElementById('main').innerText = 'Ошибка авторизации';
+    return;
+  }
+
+  // ✅ Регистрируем пользователя в Google Таблице
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      action: 'registerUser',
+      user_id: userId,
+      username: initData?.user?.username || '',
+      first_name: initData?.user?.first_name || ''
+    })
+  });
+
+  // Показываем выбор сервера
   chooseServer();
 }
+
 
 function pushScreen(fn) {
   lastScreens.push(fn);
