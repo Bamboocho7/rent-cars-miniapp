@@ -32,6 +32,7 @@ function chooseServer() {
   document.getElementById('main').innerHTML = `
     <button onclick="selectServer('La Mesa')">🌵 La Mesa</button>
     <button onclick="selectServer('Murrieta')">🏙 Murrieta</button>
+	<button onclick="toggleNotifications()">🔔 Уведомления</button>
   `;
 }
 
@@ -45,7 +46,6 @@ window.showMainMenu = function () {
   document.getElementById('main').innerHTML = `
     <button onclick="showCars()">🚗 Мои машины</button>
     <button onclick="showHistory()">📜 История аренд</button>
-	<button onclick="toggleNotifications()">🔔 Уведомления</button>
     <button onclick="chooseServer()">🔁 Сменить сервер</button>
   `;
 };
