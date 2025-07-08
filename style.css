@@ -1,157 +1,38 @@
-:root {
-      --primary-color: #ffffff;
-      --button-bg: rgba(0, 0, 0, 0.75);
-      --text-color: #ffffff;
-      --green: #4CAF50;
-      --red: #F44336;
-      --hover-bg: rgba(255, 255, 255, 0.15);
-    }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: url('https://i.imgur.com/6yowKD5.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      color: var(--text-color);
-      overflow-x: hidden;
-    }
-    #app-container {
-      max-width: 450px;
-      margin: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    header {
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    header img {
-      width: 150px;
-      user-select: none;
-      pointer-events: none;
-    }
-    h2 {
-      margin: 10px 0;
-      font-size: 20px;
-      color: var(--text-color);
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      margin: 8px 0;
-      background: var(--button-bg);
-      color: var(--text-color);
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
-    }
-    button:hover {
-      background: var(--hover-bg);
-      transform: scale(1.02);
-    }
-    .car-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--button-bg);
-      padding: 10px 14px;
-      border-radius: 12px;
-      margin: 8px 0;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .car-card:hover {
-      background: var(--hover-bg);
-    }
-    .car-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .status-indicator {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-    }
-    .status-free {
-      background: var(--green);
-    }
-    .status-rented {
-      background: var(--red);
-    }
-    .car-image {
-      width: 50px;
-      height: 40px;
-      object-fit: contain;
-      border-radius: 6px;
-      background: #222;
-    }
-    .car-name {
-      font-weight: bold;
-      font-size: 16px;
-    }
-    .car-stats-container {
-      background: var(--button-bg);
-      border-radius: 14px;
-      padding: 20px;
-      text-align: center;
-    }
-    .car-stats-container img {
-      width: 250px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      object-fit: contain;
-    }
-    .car-stats-container .car-name {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    .car-stats-text {
-      font-size: 16px;
-      margin-bottom: 16px;
-    }
-    .car-stats-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-    .car-stats-buttons button {
-      flex: 1 1 45%;
-    }
-    .card-history {
-      background: var(--button-bg);
-      border-radius: 12px;
-      padding: 10px;
-      display: flex;
-      gap: 12px;
-      margin: 8px 0;
-    }
-    .card-history img {
-      width: 70px;
-      height: 50px;
-      object-fit: contain;
-      border-radius: 6px;
-      background: #222;
-    }
-    .card-history .text {
-      font-size: 14px;
-    }
-    .footer {
-      margin-top: auto;
-      text-align: center;
-      font-size: 13px;
-      color: #ccc;
-    }
-	.sortable .car-card {
-	cursor: move;
-	transition: transform 0.2s;
-	}
-	.car-card.dragging {
-	opacity: 0.5;
-	}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
+}
+#main {
+  padding: 1em;
+}
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  background-color: #2e8b57;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #246b47;
+}
+.car-card {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.sortable .car-card {
+  cursor: move;
+  transition: transform 0.2s;
+}
+.car-card.dragging {
+  opacity: 0.5;
+}
