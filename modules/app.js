@@ -126,50 +126,13 @@ window.showCarStats = async function (car) {
 };
 
 window.editCarImagePrompt = function (car) {
-  if (!tg.isVersionAtLeast('6.1')) {
-    alert("Загрузка фото поддерживается только в Telegram версии 6.1+");
-    return;
-  }
-
-  tg.showPopup({
-    title: "Загрузите фото",
-    message: "Откройте меню и выберите фото машины",
-    buttons: [{ id: "close", type: "close" }]
-  });
-
-  tg.onEvent('main_button_clicked', () => tg.close());
-  tg.onEvent('files', (files) => {
-    const file = files[0];
-    if (!file) return alert('Файл не выбран');
-    uploadPhoto(file, car);
-  });
-
-  tg.requestWriteAccess && tg.requestWriteAccess(); // для iOS
+  const url = prompt("URL картинки:");
+  if (!url) return;
+  fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'editCarImage', server, car, image_url: url, user_id: userId })
+  }).then(() => showCarStats(car));
 };
-
-
-async function uploadPhoto(file, car) {
-  const formData = new FormData();
-  formData.append("photo", file);
-  formData.append("action", "uploadCarPhoto");
-  formData.append("car", car);
-  formData.append("server", server);
-  formData.append("user_id", userId);
-
-  const res = await fetch(API_URL, {
-    method: "POST",
-    body: formData,
-  });
-
-  const json = await res.json();
-  if (json.success) {
-    alert("Фото обновлено!");
-    showCarStats(car);
-  } else {
-    alert("Ошибка загрузки фото.");
-  }
-}
-
 
 window.deleteCarConfirm = function (car) {
   if (!confirm(`Удалить "${car}"?`)) return;
