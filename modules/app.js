@@ -8,14 +8,12 @@ let userId = null;
 let server = null;
 let lastScreens = [];
 
-init() {
+export function init() {
   const initData = tg.initDataUnsafe;
   userId = initData?.user?.id;
   if (!userId) return document.getElementById('main').innerText = 'Ошибка авторизации';
   chooseServer();
 }
-
-
 
 function pushScreen(fn) {
   lastScreens.push(fn);
@@ -47,7 +45,6 @@ window.showMainMenu = function () {
   document.getElementById('main').innerHTML = `
     <button onclick="showCars()">🚗 Мои машины</button>
     <button onclick="showHistory()">📜 История аренд</button>
-	<button onclick="toggleNotifications()">🔔 Уведомления</button>
     <button onclick="chooseServer()">🔁 Сменить сервер</button>
   `;
 };
@@ -209,8 +206,4 @@ window.showHistory = async function () {
     <button onclick="showMainMenu()">🏠 В главное меню</button>
   `;
   document.getElementById('main').innerHTML = html;
-};
-
-window.toggleNotifications = function () {
-  alert('🔔 В этой версии уведомления включены по умолчанию.\nВы получите сообщение в Telegram, когда аренда завершится.');
 };
