@@ -8,27 +8,13 @@ let userId = null;
 let server = null;
 let lastScreens = [];
 
-export function init() {
+init() {
   const initData = tg.initDataUnsafe;
   userId = initData?.user?.id;
-  if (!userId) {
-    document.getElementById('main').innerText = '❌ Ошибка авторизации';
-    return;
-  }
-
-  document.getElementById('main').innerHTML = `
-    <div class="welcome">
-      <img src="https://i.imgur.com/jbzCu4w.png" alt="Logo" class="logo" />
-      <h2>🚗 Rent Cars Bot</h2>
-      <p>
-        Управляй арендой машин в игре 🕹<br>
-        Следи за прибылью 💰 и не забывай продлевать аренды ⏰<br><br>
-        Выбери сервер и начни!
-      </p>
-      <button onclick="chooseServer()">🚀 Начать</button>
-    </div>
-  `;
+  if (!userId) return document.getElementById('main').innerText = 'Ошибка авторизации';
+  chooseServer();
 }
+
 
 
 function pushScreen(fn) {
