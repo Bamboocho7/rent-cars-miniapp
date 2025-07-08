@@ -148,3 +148,10 @@
       font-size: 13px;
       color: #ccc;
     }
+	.sortable .car-card {
+	cursor: move;
+	transition: transform 0.2s;
+	}
+	.car-card.dragging {
+	opacity: 0.5;
+	}
