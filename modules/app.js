@@ -55,27 +55,39 @@ window.showCars = async function () {
   const res = await fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`);
   const cars = await res.json();
 
-  let html = '';
-  cars.forEach(car => {
-    const status = car.inRent ? 'status-rented' : 'status-free';
-    const img = car.image_url?.trim() ? car.image_url : DEFAULT_IMAGE;
-    html += `
-      <div class="car-card" onclick="showCarStats('${car.name}')">
-        <div class="car-info">
-          <div class="status-indicator ${status}"></div>
-          <div class="car-name">${car.name}</div>
-        </div>
-        <img class="car-image" src="${img}" />
-      </div>
-    `;
-  });
-  html += `
+  const orderKey = `car_order_${server}_${userId}`;
+  let order = JSON.parse(localStorage.getItem(orderKey) || '[]');
+
+  // Сортируем по сохранённому порядку
+  if (order.length) {
+    cars.sort((a, b) => order.indexOf(a.name) - order.indexOf(b.name));
+  }
+
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div id="car-list" class="sortable">
+      ${cars.map(car => {
+        const status = car.inRent ? 'status-rented' : 'status-free';
+        const img = car.image_url?.trim() ? car.image_url : DEFAULT_IMAGE;
+        return `
+          <div class="car-card" draggable="true" data-car="${car.name}">
+            <div class="car-info">
+              <div class="status-indicator ${status}"></div>
+              <div class="car-name">${car.name}</div>
+            </div>
+            <img class="car-image" src="${img}" />
+          </div>
+        `;
+      }).join('')}
+    </div>
     <button onclick="addCar()">➕ Добавить машину</button>
     <button onclick="goBack()">⬅️ Назад</button>
     <button onclick="showMainMenu()">🏠 В главное меню</button>
   `;
-  document.getElementById('main').innerHTML = html;
+
+  enableDragDrop(orderKey);
 };
+
 
 window.addCar = function () {
   const name = prompt("Введите название машины:");
@@ -212,4 +224,47 @@ window.showHistory = async function () {
 window.toggleNotifications = function () {
   alert('🔔 В этой версии уведомления включены по умолчанию.\nВы получите сообщение в Telegram, когда аренда завершится.');
 };
+
+function enableDragDrop(orderKey) {
+  const list = document.getElementById('car-list');
+  let dragged = null;
+
+  list.querySelectorAll('.car-card').forEach(card => {
+    card.addEventListener('dragstart', (e) => {
+      dragged = card;
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', () => {
+      dragged = null;
+      card.classList.remove('dragging');
+    });
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const after = getDragAfterElement(list, e.clientY);
+      if (after == null) {
+        list.appendChild(dragged);
+      } else {
+        list.insertBefore(dragged, after);
+      }
+    });
+  });
+
+  list.addEventListener('drop', () => {
+    const newOrder = Array.from(list.children).map(el => el.dataset.car);
+    localStorage.setItem(orderKey, JSON.stringify(newOrder));
+  });
+}
+
+function getDragAfterElement(container, y) {
+  const cards = [...container.querySelectorAll('.car-card:not(.dragging)')];
+  return cards.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
 
