@@ -73,10 +73,8 @@ window.showMainMenu = function () {
 
 window.showCars = async function () {
   pushScreen(showCars);
-  try {
-    const res = await fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`);
-    if (!res.ok) throw new Error('Ошибка загрузки машин');
-    const cars = await res.json();
+  const res = await fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`);
+  const cars = await res.json();
 
   let html = '';
   cars.forEach(car => {
@@ -98,10 +96,6 @@ window.showCars = async function () {
     <button onclick="showMainMenu()">🏠 В главное меню</button>
   `;
   document.getElementById('main').innerHTML = html;
-    } catch (err) {
-    alert('Не удалось загрузить машины: ' + err.message);
-    goBack();
-  }
 };
 
 window.addCar = function () {
@@ -115,14 +109,12 @@ window.addCar = function () {
 
 window.showCarStats = async function (car) {
   pushScreen(() => showCarStats(car));
-  try {
-    const [statsRes, carsRes] = await Promise.all([
-      fetch(`${API_URL}?action=getCarStats&server=${server}&car=${car}&user_id=${userId}`),
-      fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`)
-    ]);
-    if (!statsRes.ok || !carsRes.ok) throw new Error('Ошибка загрузки данных');
-    const stats = await statsRes.json();
-    const cars = await carsRes.json();
+  const [statsRes, carsRes] = await Promise.all([
+    fetch(`${API_URL}?action=getCarStats&server=${server}&car=${car}&user_id=${userId}`),
+    fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`)
+  ]);
+  const stats = await statsRes.json();
+  const cars = await carsRes.json();
   const carObj = cars.find(c => c.name === car);
   const img = carObj?.image_url?.trim() ? carObj.image_url : DEFAULT_IMAGE;
 
@@ -152,10 +144,6 @@ window.showCarStats = async function (car) {
       </div>
     </div>
   `;
-    } catch (err) {
-    alert('Не удалось загрузить данные машины: ' + err.message);
-    goBack();
-  }
 };
 
 window.editCarImagePrompt = function (car) {
@@ -201,14 +189,12 @@ window.addToRent = async function (car) {
 
 window.showHistory = async function () {
   pushScreen(showHistory);
-  try {
-    const [res, carsRes] = await Promise.all([
-      fetch(`${API_URL}?action=getHistory&server=${server}&user_id=${userId}`),
-      fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`)
-    ]);
-    if (!res.ok || !carsRes.ok) throw new Error('Ошибка загрузки истории');
-    const history = await res.json();
-    const cars = await carsRes.json();
+  const [res, carsRes] = await Promise.all([
+    fetch(`${API_URL}?action=getHistory&server=${server}&user_id=${userId}`),
+    fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`)
+  ]);
+  const history = await res.json();
+  const cars = await carsRes.json();
 
   if (!history.length) {
     document.getElementById('main').innerHTML = `
@@ -242,10 +228,6 @@ window.showHistory = async function () {
     <button onclick="showMainMenu()">🏠 В главное меню</button>
   `;
   document.getElementById('main').innerHTML = html;
-    } catch (err) {
-    alert('Не удалось загрузить историю: ' + err.message);
-    goBack();
-  }
 };
 
 window.toggleNotifications = function () {
