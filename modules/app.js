@@ -78,27 +78,27 @@ window.showCars = async function () {
     if (!res.ok) throw new Error('Ошибка загрузки машин');
     const cars = await res.json();
 
-  let html = '';
-  cars.forEach(car => {
-    const status = car.inRent ? 'status-rented' : 'status-free';
-    const img = car.image_url?.trim() ? car.image_url : DEFAULT_IMAGE;
-    html += `
-      <div class="car-card" onclick="showCarStats('${car.name}')">
-        <div class="car-info">
-          <div class="status-indicator ${status}"></div>
-          <div class="car-name">${car.name}</div>
+    let html = '';
+    cars.forEach(car => {
+      const status = car.inRent ? 'status-rented' : 'status-free';
+      const img = car.image_url?.trim() ? car.image_url : DEFAULT_IMAGE;
+      html += `
+        <div class="car-card" onclick="showCarStats('${car.name}')">
+          <div class="car-info">
+            <div class="status-indicator ${status}"></div>
+            <div class="car-name">${car.name}</div>
+          </div>
+          <img class="car-image" src="${img}" />
         </div>
-        <img class="car-image" src="${img}" />
-      </div>
+      `;
+    });
+    html += `
+      <button onclick="addCar()">➕ Добавить машину</button>
+      <button onclick="goBack()">⬅️ Назад</button>
+      <button onclick="showMainMenu()">🏠 В главное меню</button>
     `;
-  });
-  html += `
-    <button onclick="addCar()">➕ Добавить машину</button>
-    <button onclick="goBack()">⬅️ Назад</button>
-    <button onclick="showMainMenu()">🏠 В главное меню</button>
-  `;
-  document.getElementById('main').innerHTML = html;
-    } catch (err) {
+    document.getElementById('main').innerHTML = html;
+  } catch (err) {
     alert('Не удалось загрузить машины: ' + err.message);
     goBack();
   }
@@ -123,35 +123,39 @@ window.showCarStats = async function (car) {
     if (!statsRes.ok || !carsRes.ok) throw new Error('Ошибка загрузки данных');
     const stats = await statsRes.json();
     const cars = await carsRes.json();
-  const carObj = cars.find(c => c.name === car);
-  const img = carObj?.image_url?.trim() ? carObj.image_url : DEFAULT_IMAGE;
+    const carObj = cars.find(c => c.name === car);
+    const img = carObj?.image_url?.trim() ? carObj.image_url : DEFAULT_IMAGE;
 
-  let status = stats.active
-    ? `⏱ В аренде до: ${new Date(stats.active.end).toLocaleString()}`
-    : '✅ Свободна';
+    let status = stats.active
+      ? `⏱ В аренде до: ${new Date(stats.active.end).toLocaleString()}`
+      : '✅ Свободна';
 
-  let rentButton = !stats.active
-    ? `<button onclick="addToRent('${car}')">➕ Добавить в аренду</button>`
-    : '';
+    let rentButton = !stats.active
+      ? `<button onclick="addToRent('${car}')">➕ Добавить в аренду</button>`
+      : '';
 
-  document.getElementById('main').innerHTML = `
-    <div class="car-stats-container">
-      <img src="${img}" />
-      <div class="car-name">${car}</div>
-      <div class="car-stats-text">
-        💵 Сумма: ${stats.totalSum}$<br>
-        ⏳ Часы: ${stats.totalHours}<br>
-        ${status}
+    document.getElementById('main').innerHTML = `
+      <div class="car-stats-container">
+        <img src="${img}" />
+        <div class="car-name">${car}</div>
+        <div class="car-stats-text">
+          💵 Сумма: ${stats.totalSum}$<br>
+          ⏳ Часы: ${stats.totalHours}<br>
+          ${status}
+        </div>
+        <div class="car-stats-buttons">
+          ${rentButton}
+          <button onclick="editCarImagePrompt('${car}')">✏️ Изменить фото</button>
+          <button onclick="deleteCarConfirm('${car}')">🗑 Удалить</button>
+          <button onclick="goBack()">⬅️ Назад</button>
+          <button onclick="showMainMenu()">🏠 Главное меню</button>
+        </div>
       </div>
-      <div class="car-stats-buttons">
-        ${rentButton}
-        <button onclick="editCarImagePrompt('${car}')">✏️ Изменить фото</button>
-        <button onclick="deleteCarConfirm('${car}')">🗑 Удалить</button>
-        <button onclick="goBack()">⬅️ Назад</button>
-        <button onclick="showMainMenu()">🏠 Главное меню</button>
-      </div>
-    </div>
-  `;
+    `;
+  } catch (err) {
+    alert('Не удалось загрузить данные машины: ' + err.message);
+    goBack();
+  }
 };
 
 window.editCarImagePrompt = function (car) {
@@ -206,42 +210,42 @@ window.showHistory = async function () {
     const history = await res.json();
     const cars = await carsRes.json();
 
-  if (!history.length) {
-    document.getElementById('main').innerHTML = `
-	} catch (err) {
-    alert('Не удалось загрузить историю: ' + err.message);
-    goBack();
-  }
-      <div class="card">История пуста</div>
+    if (!history.length) {
+      document.getElementById('main').innerHTML = `
+        <div class="card">История пуста</div>
+        <button onclick="goBack()">⬅️ Назад</button>
+        <button onclick="showMainMenu()">🏠 В главное меню</button>
+      `;
+      return;
+    }
+
+    let html = '<h3>История аренд</h3>';
+    history.forEach(rent => {
+      const car = cars.find(c => c.name === rent.car);
+      const img = car?.image_url?.trim() ? car.image_url : DEFAULT_IMAGE;
+      html += `
+        <div class="card-history">
+          <img src="${img}" />
+          <div class="text">
+            🚗 <b>${rent.car}</b><br>
+            💵 ${rent.price}$, ⏳ ${rent.hours} ч<br>
+            С ${new Date(rent.start).toLocaleString()}<br>
+            До ${new Date(rent.end).toLocaleString()}<br>
+            Статус: <b style="color:${rent.active ? 'lime' : 'tomato'}">${rent.active ? 'Активна' : 'Завершена'}</b>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
       <button onclick="goBack()">⬅️ Назад</button>
       <button onclick="showMainMenu()">🏠 В главное меню</button>
     `;
-    return;
+    document.getElementById('main').innerHTML = html;
+  } catch (err) {
+    alert('Не удалось загрузить историю: ' + err.message);
+    goBack();
   }
-
-  let html = '<h3>История аренд</h3>';
-  history.forEach(rent => {
-    const car = cars.find(c => c.name === rent.car);
-    const img = car?.image_url?.trim() ? car.image_url : DEFAULT_IMAGE;
-    html += `
-      <div class="card-history">
-        <img src="${img}" />
-        <div class="text">
-          🚗 <b>${rent.car}</b><br>
-          💵 ${rent.price}$, ⏳ ${rent.hours} ч<br>
-          С ${new Date(rent.start).toLocaleString()}<br>
-          До ${new Date(rent.end).toLocaleString()}<br>
-          Статус: <b style="color:${rent.active ? 'lime' : 'tomato'}">${rent.active ? 'Активна' : 'Завершена'}</b>
-        </div>
-      </div>
-    `;
-  });
-
-  html += `
-    <button onclick="goBack()">⬅️ Назад</button>
-    <button onclick="showMainMenu()">🏠 В главное меню</button>
-  `;
-  document.getElementById('main').innerHTML = html;
 };
 
 window.toggleNotifications = function () {
