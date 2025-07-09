@@ -76,10 +76,16 @@ window.showCars = async function () {
   try {
     const res = await fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`);
     if (!res.ok) throw new Error('Ошибка загрузки машин');
+
     const cars = await res.json();
-	if (!Array.isArray(cars)) {
-	throw new Error('Неверный формат данных: ожидался список машин');
-	}
+
+    // Временно выводим ответ сервера в консоль
+    console.log('Ответ от сервера:', cars);
+
+    // Проверяем, что ответ — это массив
+    if (!Array.isArray(cars)) {
+      throw new Error('Неверный формат данных: ожидался список машин');
+    }
 
     let html = '';
     cars.forEach(car => {
