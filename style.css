@@ -148,3 +148,36 @@
       font-size: 13px;
       color: #ccc;
     }
+	
+	.period-btn {
+		transition: all 0.3s ease;
+	}
+
+.	period-btn:hover {
+		background: rgba(255,255,255,0.15) !important;
+	}
+
+	.period-btn.active {
+		background: rgba(255,255,255,0.2) !important;
+	}
+
+	#daily-stats, #weekly-stats, #monthly-stats {
+		animation: fadeIn 0.3s ease;
+	}
+
+	@keyframes fadeIn {
+		from { opacity: 0; transform: translateY(10px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+
+	table {
+		font-size: 14px;
+	}
+
+	table th {
+		font-weight: 600;
+	}
+
+	table tr:hover {
+		background: rgba(255,255,255,0.05);
+	}
