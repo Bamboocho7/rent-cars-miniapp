@@ -73,8 +73,10 @@ window.showMainMenu = function () {
 
 window.showCars = async function () {
   pushScreen(showCars);
-  const res = await fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`);
-  const cars = await res.json();
+  try {
+    const res = await fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`);
+    if (!res.ok) throw new Error('Ошибка загрузки машин');
+    const cars = await res.json();
 
   let html = '';
   cars.forEach(car => {
@@ -96,6 +98,10 @@ window.showCars = async function () {
     <button onclick="showMainMenu()">🏠 В главное меню</button>
   `;
   document.getElementById('main').innerHTML = html;
+    } catch (err) {
+    alert('Не удалось загрузить машины: ' + err.message);
+    goBack();
+  }
 };
 
 window.addCar = function () {
@@ -109,12 +115,14 @@ window.addCar = function () {
 
 window.showCarStats = async function (car) {
   pushScreen(() => showCarStats(car));
-  const [statsRes, carsRes] = await Promise.all([
-    fetch(`${API_URL}?action=getCarStats&server=${server}&car=${car}&user_id=${userId}`),
-    fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`)
-  ]);
-  const stats = await statsRes.json();
-  const cars = await carsRes.json();
+  try {
+    const [statsRes, carsRes] = await Promise.all([
+      fetch(`${API_URL}?action=getCarStats&server=${server}&car=${car}&user_id=${userId}`),
+      fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`)
+    ]);
+    if (!statsRes.ok || !carsRes.ok) throw new Error('Ошибка загрузки данных');
+    const stats = await statsRes.json();
+    const cars = await carsRes.json();
   const carObj = cars.find(c => c.name === car);
   const img = carObj?.image_url?.trim() ? carObj.image_url : DEFAULT_IMAGE;
 
@@ -189,15 +197,21 @@ window.addToRent = async function (car) {
 
 window.showHistory = async function () {
   pushScreen(showHistory);
-  const [res, carsRes] = await Promise.all([
-    fetch(`${API_URL}?action=getHistory&server=${server}&user_id=${userId}`),
-    fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`)
-  ]);
-  const history = await res.json();
-  const cars = await carsRes.json();
+  try {
+    const [res, carsRes] = await Promise.all([
+      fetch(`${API_URL}?action=getHistory&server=${server}&user_id=${userId}`),
+      fetch(`${API_URL}?action=getCars&server=${server}&user_id=${userId}`)
+    ]);
+    if (!res.ok || !carsRes.ok) throw new Error('Ошибка загрузки истории');
+    const history = await res.json();
+    const cars = await carsRes.json();
 
   if (!history.length) {
     document.getElementById('main').innerHTML = `
+	} catch (err) {
+    alert('Не удалось загрузить историю: ' + err.message);
+    goBack();
+  }
       <div class="card">История пуста</div>
       <button onclick="goBack()">⬅️ Назад</button>
       <button onclick="showMainMenu()">🏠 В главное меню</button>
