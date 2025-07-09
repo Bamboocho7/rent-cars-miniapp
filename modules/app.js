@@ -101,6 +101,7 @@ window.showMainMenu = function () {
   document.getElementById('main').innerHTML = `
     <button onclick="showCars()">🚗 Мои машины</button>
     <button onclick="showHistory()">📜 История аренд</button>
+    <button onclick="showStatistics()">📊 Статистика</button>
     <button onclick="chooseServer()">🔁 Сменить сервер</button>
   `;
 };
@@ -383,3 +384,172 @@ function showError(message) {
     </div>
   `;
 }
+
+window.showStatistics = async function () {
+  pushScreen(showStatistics);
+  showLoader();
+  
+  try {
+    const res = await fetch(`${API_URL}?action=getOverallStats&server=${server}&user_id=${userId}`);
+    const stats = await res.json();
+    
+    if (stats.error) {
+      showError(stats.error);
+      return;
+    }
+    
+    let html = `
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h2>📊 Статистика сервера ${server}</h2>
+        <p style="color: #ccc;">Последнее обновление: ${new Date().toLocaleString()}</p>
+      </div>
+      
+      <!-- Основные показатели -->
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 16px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.totalCars}</div>
+          <div style="font-size: 12px; opacity: 0.9;">Всего машин</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 16px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.rentedCars}</div>
+          <div style="font-size: 12px; opacity: 0.9;">В аренде</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 16px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.freeCars}</div>
+          <div style="font-size: 12px; opacity: 0.9;">Свободно</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); padding: 16px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.utilizationRate}%</div>
+          <div style="font-size: 12px; opacity: 0.9;">Загрузка</div>
+        </div>
+      </div>
+      
+      <!-- Финансовая статистика -->
+      <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+        <h3 style="margin-top: 0; color: #ffd700;">💰 Финансовая статистика</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+          <div style="text-align: center;">
+            <div style="font-size: 20px; font-weight: bold; color: #4CAF50;">${stats.totalEarnings}$</div>
+            <div style="font-size: 12px; color: #ccc;">Общий доход</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 20px; font-weight: bold; color: #2196F3;">${stats.totalHours}ч</div>
+            <div style="font-size: 12px; color: #ccc;">Всего часов</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 20px; font-weight: bold; color: #FF9800;">${stats.avgPrice}$</div>
+            <div style="font-size: 12px; color: #ccc;">Средняя цена</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Активность -->
+      <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+        <h3 style="margin-top: 0; color: #e91e63;">📈 Активность</h3>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+          <div>
+            <div style="font-size: 18px; font-weight: bold;">${stats.totalRentals}</div>
+            <div style="font-size: 12px; color: #ccc;">Всего аренд</div>
+          </div>
+          <div>
+            <div style="font-size: 18px; font-weight: bold; color: #4CAF50;">${stats.activeRentals}</div>
+            <div style="font-size: 12px; color: #ccc;">Активных</div>
+          </div>
+          <div>
+            <div style="font-size: 18px; font-weight: bold; color: #9C27B0;">${stats.completedRentals}</div>
+            <div style="font-size: 12px; color: #ccc;">Завершено</div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Добавляем топ машин, если есть данные
+    if (stats.topCars && stats.topCars.length > 0) {
+      html += `
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #ff5722;">🏆 Топ машин по доходу</h3>
+          <div style="space-y: 8px;">
+      `;
+      
+      stats.topCars.forEach((car, index) => {
+        html += `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center;">
+              <span style="background: ${index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : 'rgba(255,255,255,0.2)'}; 
+                           color: ${index < 3 ? '#000' : '#fff'}; 
+                           width: 24px; height: 24px; border-radius: 50%; 
+                           display: flex; align-items: center; justify-content: center; 
+                           font-size: 12px; font-weight: bold; margin-right: 12px;">
+                ${index + 1}
+              </span>
+              <span style="font-weight: 500;">${car.name}</span>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: bold; color: #4CAF50;">${car.earnings}$</div>
+              <div style="font-size: 11px; color: #ccc;">${car.rentals} аренд</div>
+            </div>
+          </div>
+        `;
+      });
+      
+      html += `
+          </div>
+        </div>
+      `;
+    }
+    
+    // Добавляем кнопки управления
+    html += `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
+        <button onclick="goBack()" style="background: rgba(255,255,255,0.1);">⬅️ Назад</button>
+        <button onclick="showMainMenu()" style="background: rgba(255,255,255,0.1);">🏠 Главное меню</button>
+      </div>
+    `;
+    
+    document.getElementById('main').innerHTML = html;
+  } catch (error) {
+    console.error('Error loading statistics:', error);
+    showError('Не удалось загрузить статистику');
+  }
+};
+
+// Автообновление статистики каждые 30 секунд
+let statsUpdateInterval;
+
+window.startStatsAutoUpdate = function() {
+  // Очищаем предыдущий интервал
+  if (statsUpdateInterval) {
+    clearInterval(statsUpdateInterval);
+  }
+  
+  // Устанавливаем новый интервал
+  statsUpdateInterval = setInterval(() => {
+    // Проверяем, находимся ли мы на странице статистики
+    const currentScreen = lastScreens[lastScreens.length - 1];
+    if (currentScreen && currentScreen.name === 'showStatistics') {
+      console.log('Auto-updating statistics...');
+      showStatistics();
+    }
+  }, 30000); // 30 секунд
+};
+
+window.stopStatsAutoUpdate = function() {
+  if (statsUpdateInterval) {
+    clearInterval(statsUpdateInterval);
+    statsUpdateInterval = null;
+  }
+};
+
+// Запускаем автообновление при открытии статистики
+const originalShowStatistics = window.showStatistics;
+window.showStatistics = function() {
+  startStatsAutoUpdate();
+  return originalShowStatistics.apply(this, arguments);
+};
+
+// Останавливаем автообновление при выходе со страницы
+const originalGoBack = window.goBack;
+window.goBack = function() {
+  stopStatsAutoUpdate();
+  return originalGoBack.apply(this, arguments);
+};
