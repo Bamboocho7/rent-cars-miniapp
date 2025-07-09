@@ -80,7 +80,11 @@ window.showCars = async function () {
     const cars = await res.json();
 
     // Временно выводим ответ сервера в консоль
-    console.log('Ответ от сервера:', cars);
+    const cars = await res.json();
+	alert('Ответ от сервера: ' + JSON.stringify(cars)); // Временно покажет ответ
+		if (!Array.isArray(cars)) {
+		throw new Error('Неверный формат данных: ожидался список машин');
+		}
 
     // Проверяем, что ответ — это массив
     if (!Array.isArray(cars)) {
