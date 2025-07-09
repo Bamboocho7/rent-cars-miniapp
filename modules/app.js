@@ -404,66 +404,78 @@ window.showStatistics = async function () {
         <p style="color: #ccc;">Последнее обновление: ${new Date().toLocaleString()}</p>
       </div>
       
-      <!-- Основные показатели -->
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 16px; border-radius: 12px; text-align: center;">
-          <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.totalCars}</div>
-          <div style="font-size: 12px; opacity: 0.9;">Всего машин</div>
-        </div>
-        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 16px; border-radius: 12px; text-align: center;">
-          <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.rentedCars}</div>
-          <div style="font-size: 12px; opacity: 0.9;">В аренде</div>
-        </div>
-        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 16px; border-radius: 12px; text-align: center;">
-          <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.freeCars}</div>
-          <div style="font-size: 12px; opacity: 0.9;">Свободно</div>
-        </div>
-        <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); padding: 16px; border-radius: 12px; text-align: center;">
-          <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.utilizationRate}%</div>
-          <div style="font-size: 12px; opacity: 0.9;">Загрузка</div>
-        </div>
+      <!-- Переключатель периодов -->
+      <div style="display: flex; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 4px; margin-bottom: 20px;">
+        <button onclick="showPeriodStats('overview')" class="period-btn active" style="flex: 1; padding: 8px; border: none; background: transparent; color: white; border-radius: 8px;">Обзор</button>
+        <button onclick="showPeriodStats('daily')" class="period-btn" style="flex: 1; padding: 8px; border: none; background: transparent; color: white; border-radius: 8px;">Дни</button>
+        <button onclick="showPeriodStats('weekly')" class="period-btn" style="flex: 1; padding: 8px; border: none; background: transparent; color: white; border-radius: 8px;">Недели</button>
+        <button onclick="showPeriodStats('monthly')" class="period-btn" style="flex: 1; padding: 8px; border: none; background: transparent; color: white; border-radius: 8px;">Месяцы</button>
       </div>
       
-      <!-- Финансовая статистика -->
-      <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
-        <h3 style="margin-top: 0; color: #ffd700;">💰 Финансовая статистика</h3>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
-          <div style="text-align: center;">
-            <div style="font-size: 20px; font-weight: bold; color: #4CAF50;">${stats.totalEarnings}$</div>
-            <div style="font-size: 12px; color: #ccc;">Общий доход</div>
-          </div>
-          <div style="text-align: center;">
-            <div style="font-size: 20px; font-weight: bold; color: #2196F3;">${stats.totalHours}ч</div>
-            <div style="font-size: 12px; color: #ccc;">Всего часов</div>
-          </div>
-          <div style="text-align: center;">
-            <div style="font-size: 20px; font-weight: bold; color: #FF9800;">${stats.avgPrice}$</div>
-            <div style="font-size: 12px; color: #ccc;">Средняя цена</div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Активность -->
-      <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
-        <h3 style="margin-top: 0; color: #e91e63;">📈 Активность</h3>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-          <div>
-            <div style="font-size: 18px; font-weight: bold;">${stats.totalRentals}</div>
-            <div style="font-size: 12px; color: #ccc;">Всего аренд</div>
-          </div>
-          <div>
-            <div style="font-size: 18px; font-weight: bold; color: #4CAF50;">${stats.activeRentals}</div>
-            <div style="font-size: 12px; color: #ccc;">Активных</div>
-          </div>
-          <div>
-            <div style="font-size: 18px; font-weight: bold; color: #9C27B0;">${stats.completedRentals}</div>
-            <div style="font-size: 12px; color: #ccc;">Завершено</div>
-          </div>
-        </div>
-      </div>
+      <!-- Контейнер для контента -->
+      <div id="stats-content">
     `;
     
-    // Добавляем топ машин, если есть данные
+    // Общий обзор
+    html += `
+        <!-- Основные показатели -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 16px; border-radius: 12px; text-align: center;">
+            <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.totalCars}</div>
+            <div style="font-size: 12px; opacity: 0.9;">Всего машин</div>
+          </div>
+          <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 16px; border-radius: 12px; text-align: center;">
+            <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.rentedCars}</div>
+            <div style="font-size: 12px; opacity: 0.9;">В аренде</div>
+          </div>
+          <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 16px; border-radius: 12px; text-align: center;">
+            <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.freeCars}</div>
+            <div style="font-size: 12px; opacity: 0.9;">Свободно</div>
+          </div>
+          <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); padding: 16px; border-radius: 12px; text-align: center;">
+            <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">${stats.utilizationRate}%</div>
+            <div style="font-size: 12px; opacity: 0.9;">Загрузка</div>
+          </div>
+        </div>
+        
+        <!-- Последние периоды -->
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #00bcd4;">📅 Последние периоды</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+            <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+              <div style="font-size: 14px; color: #ccc; margin-bottom: 4px;">Последние 7 дней</div>
+              <div style="font-size: 18px; font-weight: bold; color: #4CAF50;">${stats.recent.last7Days.earnings}$</div>
+              <div style="font-size: 12px; color: #ccc;">${stats.recent.last7Days.rentals} аренд</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+              <div style="font-size: 14px; color: #ccc; margin-bottom: 4px;">Последние 30 дней</div>
+              <div style="font-size: 18px; font-weight: bold; color: #4CAF50;">${stats.recent.last30Days.earnings}$</div>
+              <div style="font-size: 12px; color: #ccc;">${stats.recent.last30Days.rentals} аренд</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Финансовая статистика -->
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #ffd700;">💰 Финансовая статистика</h3>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+            <div style="text-align: center;">
+              <div style="font-size: 20px; font-weight: bold; color: #4CAF50;">${stats.totalEarnings}$</div>
+              <div style="font-size: 12px; color: #ccc;">Общий доход</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 20px; font-weight: bold; color: #2196F3;">${stats.totalHours}ч</div>
+              <div style="font-size: 12px; color: #ccc;">Всего часов</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 20px; font-weight: bold; color: #FF9800;">${stats.avgPrice}$</div>
+              <div style="font-size: 12px; color: #ccc;">Средняя цена</div>
+            </div>
+          </div>
+        </div>
+    `;
+    
+    // Топ машин
     if (stats.topCars && stats.topCars.length > 0) {
       html += `
         <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
@@ -498,8 +510,37 @@ window.showStatistics = async function () {
       `;
     }
     
-    // Добавляем кнопки управления
+    // Скрытые контейнеры для других периодов
     html += `
+      </div>
+      
+      <!-- Дневная статистика (скрыта по умолчанию) -->
+      <div id="daily-stats" style="display: none;">
+        <h3>📅 Статистика по дням (последние 30 дней)</h3>
+        <div id="daily-chart" style="height: 300px; background: rgba(255,255,255,0.05); border-radius: 12px; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+          <div style="color: #ccc;">График будет здесь</div>
+        </div>
+        <div id="daily-table"></div>
+      </div>
+      
+      <!-- Недельная статистика (скрыта по умолчанию) -->
+      <div id="weekly-stats" style="display: none;">
+        <h3>📅 Статистика по неделям (последние 12 недель)</h3>
+        <div id="weekly-chart" style="height: 300px; background: rgba(255,255,255,0.05); border-radius: 12px; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+          <div style="color: #ccc;">График будет здесь</div>
+        </div>
+        <div id="weekly-table"></div>
+      </div>
+      
+      <!-- Месячная статистика (скрыта по умолчанию) -->
+      <div id="monthly-stats" style="display: none;">
+        <h3>📅 Статистика по месяцам (последние 12 месяцев)</h3>
+        <div id="monthly-chart" style="height: 300px; background: rgba(255,255,255,0.05); border-radius: 12px; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+          <div style="color: #ccc;">График будет здесь</div>
+        </div>
+        <div id="monthly-table"></div>
+      </div>
+      
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
         <button onclick="goBack()" style="background: rgba(255,255,255,0.1);">⬅️ Назад</button>
         <button onclick="showMainMenu()" style="background: rgba(255,255,255,0.1);">🏠 Главное меню</button>
@@ -507,6 +548,10 @@ window.showStatistics = async function () {
     `;
     
     document.getElementById('main').innerHTML = html;
+    
+    // Сохраняем данные для использования в других функциях
+    window.currentStats = stats;
+    
   } catch (error) {
     console.error('Error loading statistics:', error);
     showError('Не удалось загрузить статистику');
@@ -552,4 +597,121 @@ const originalGoBack = window.goBack;
 window.goBack = function() {
   stopStatsAutoUpdate();
   return originalGoBack.apply(this, arguments);
+};
+
+window.showPeriodStats = function(period) {
+  // Скрываем все периоды
+  document.getElementById('stats-content').style.display = 'block';
+  document.getElementById('daily-stats').style.display = 'none';
+  document.getElementById('weekly-stats').style.display = 'none';
+  document.getElementById('monthly-stats').style.display = 'none';
+  
+  // Показываем выбранный период
+  if (period === 'overview') {
+    document.getElementById('stats-content').style.display = 'block';
+  } else if (period === 'daily') {
+    document.getElementById('daily-stats').style.display = 'block';
+    renderDailyStats(window.currentStats);
+  } else if (period === 'weekly') {
+    document.getElementById('weekly-stats').style.display = 'block';
+    renderWeeklyStats(window.currentStats);
+  } else if (period === 'monthly') {
+    document.getElementById('monthly-stats').style.display = 'block';
+    renderMonthlyStats(window.currentStats);
+  }
+  
+  // Обновляем активную кнопку
+  document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.classList.remove('active');
+    btn.style.background = 'transparent';
+  });
+  event.target.classList.add('active');
+  event.target.style.background = 'rgba(255,255,255,0.2)';
+};
+
+window.renderDailyStats = function(stats) {
+  if (!stats.daily || stats.daily.length === 0) {
+    document.getElementById('daily-table').innerHTML = '<div style="text-align: center; padding: 40px; color: #ccc;">Нет данных за последние 30 дней</div>';
+    return;
+  }
+  
+  let tableHtml = '<div style="overflow-x: auto;">';
+  tableHtml += '<table style="width: 100%; border-collapse: collapse; color: white;">';
+  tableHtml += '<thead><tr style="background: rgba(255,255,255,0.1);">';
+  tableHtml += '<th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2);">Дата</th>';
+  tableHtml += '<th style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.2);">Доход</th>';
+  tableHtml += '<th style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.2);">Часы</th>';
+  tableHtml += '<th style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.2);">Аренды</th>';
+  tableHtml += '</tr></thead><tbody>';
+  
+  stats.daily.forEach(day => {
+    const date = new Date(day.date).toLocaleDateString('ru-RU');
+    tableHtml += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+      <td style="padding: 12px;">${date}</td>
+      <td style="padding: 12px; text-align: right; color: #4CAF50; font-weight: bold;">${day.earnings.toFixed(2)}$</td>
+      <td style="padding: 12px; text-align: right;">${day.hours.toFixed(1)}ч</td>
+      <td style="padding: 12px; text-align: right;">${day.rentals}</td>
+    </tr>`;
+  });
+  
+  tableHtml += '</tbody></table></div>';
+  document.getElementById('daily-table').innerHTML = tableHtml;
+};
+
+window.renderWeeklyStats = function(stats) {
+  if (!stats.weekly || stats.weekly.length === 0) {
+    document.getElementById('weekly-table').innerHTML = '<div style="text-align: center; padding: 40px; color: #ccc;">Нет данных за последние 12 недель</div>';
+    return;
+  }
+  
+  let tableHtml = '<div style="overflow-x: auto;">';
+  tableHtml += '<table style="width: 100%; border-collapse: collapse; color: white;">';
+  tableHtml += '<thead><tr style="background: rgba(255,255,255,0.1);">';
+  tableHtml += '<th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2);">Неделя</th>';
+  tableHtml += '<th style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.2);">Доход</th>';
+  tableHtml += '<th style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.2);">Часы</th>';
+  tableHtml += '<th style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.2);">Аренды</th>';
+  tableHtml += '</tr></thead><tbody>';
+  
+  stats.weekly.forEach(week => {
+    const weekStart = new Date(week.date).toLocaleDateString('ru-RU');
+    tableHtml += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+      <td style="padding: 12px;">Неделя с ${weekStart}</td>
+      <td style="padding: 12px; text-align: right; color: #4CAF50; font-weight: bold;">${week.earnings.toFixed(2)}$</td>
+      <td style="padding: 12px; text-align: right;">${week.hours.toFixed(1)}ч</td>
+      <td style="padding: 12px; text-align: right;">${week.rentals}</td>
+    </tr>`;
+  });
+  
+  tableHtml += '</tbody></table></div>';
+  document.getElementById('weekly-table').innerHTML = tableHtml;
+};
+
+window.renderMonthlyStats = function(stats) {
+  if (!stats.monthly || stats.monthly.length === 0) {
+    document.getElementById('monthly-table').innerHTML = '<div style="text-align: center; padding: 40px; color: #ccc;">Нет данных за последние 12 месяцев</div>';
+    return;
+  }
+  
+  let tableHtml = '<div style="overflow-x: auto;">';
+  tableHtml += '<table style="width: 100%; border-collapse: collapse; color: white;">';
+  tableHtml += '<thead><tr style="background: rgba(255,255,255,0.1);">';
+  tableHtml += '<th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2);">Месяц</th>';
+  tableHtml += '<th style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.2);">Доход</th>';
+  tableHtml += '<th style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.2);">Часы</th>';
+  tableHtml += '<th style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.2);">Аренды</th>';
+  tableHtml += '</tr></thead><tbody>';
+  
+  stats.monthly.forEach(month => {
+    const monthDate = new Date(month.date + '-01').toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' });
+    tableHtml += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+      <td style="padding: 12px;">${monthDate}</td>
+      <td style="padding: 12px; text-align: right; color: #4CAF50; font-weight: bold;">${month.earnings.toFixed(2)}$</td>
+      <td style="padding: 12px; text-align: right;">${month.hours.toFixed(1)}ч</td>
+      <td style="padding: 12px; text-align: right;">${month.rentals}</td>
+    </tr>`;
+  });
+  
+  tableHtml += '</tbody></table></div>';
+  document.getElementById('monthly-table').innerHTML = tableHtml;
 };
